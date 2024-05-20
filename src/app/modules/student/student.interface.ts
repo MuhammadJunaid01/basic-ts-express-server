@@ -1,45 +1,27 @@
-import { model, Schema } from "mongoose";
-
-export type BloodGroup =
-  | "A+"
-  | "A-"
-  | "B+"
-  | "B-"
-  | "AB+"
-  | "AB-"
-  | "O+"
-  | "O-";
-export type Guardian = {
-  fatherName: string;
-  fatherOccoupation: string;
-  fatherContactNo: string;
-  motherName: string;
-  motherOccoupation: string;
-  motherContactNo: string;
-};
-export type LocalGuardian = {
-  name: string;
-  occoupation: string;
-  address: string;
-  contactNo: string;
-};
-export type UserName = {
-  fisrtName: string;
-  middleName: string;
-  lastName: string;
-};
 export interface IStudent {
   id: string;
-  name: UserName;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
   gender: "male" | "female";
-  dateOfBirth: string;
   contactNo: string;
-  email: string;
-  bloodGroup?: BloodGroup;
+  bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+  permanentAddress: string;
   presentAddress: string;
-  parmanentAddress: string;
-  guardian: Guardian;
-  localGuardian: LocalGuardian;
+  guardian: {
+    fatherName: string;
+    fatherContactNo: string;
+    fatherOccupation: string;
+    motherName: string;
+    motherContactNo: string;
+    motherOccupation: string;
+  };
+  localGuardian?: {
+    name?: string;
+    occupation?: string;
+    contactNo?: string;
+  };
   profileImage?: string;
   isActive: "active" | "inactive";
 }

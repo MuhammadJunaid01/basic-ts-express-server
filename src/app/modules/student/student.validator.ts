@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from "express";
-import { AnyZodObject, ZodEffects, ZodError, z } from "zod";
+import { z, AnyZodObject, ZodEffects, ZodError } from "zod";
+
 export const bloodGroupSchema = z.enum([
   "A+",
   "A-",
@@ -10,27 +11,32 @@ export const bloodGroupSchema = z.enum([
   "O+",
   "O-",
 ]);
+
 export const guardianSchema = z.object({
   fatherName: z.string(),
-  fatherOccoupation: z.string(),
+  fatherOccupation: z.string(),
   fatherContactNo: z.string(),
   motherName: z.string(),
-  motherOccoupation: z.string(),
+  motherOccupation: z.string(),
   motherContactNo: z.string(),
 });
+
 export const localGuardianSchema = z.object({
-  name: z.string(),
-  occoupation: z.string(),
-  address: z.string(),
-  contactNo: z.string(),
+  name: z.string().optional(),
+  occupation: z.string().optional(),
+  contactNo: z.string().optional(),
 });
+
 export const userSchema = z.object({
-  fisrtName: z.string(),
-  middleName: z.string(),
+  firstName: z.string(),
+  middleName: z.string().optional(),
   lastName: z.string(),
 });
+
 export const studentValidatorSchema = z.object({
-  id: z.string(),
+  id: z.string({
+    required_error: "id is required feild",
+  }),
   name: userSchema,
   gender: z.enum(["male", "female"]),
   dateOfBirth: z.string(),
@@ -38,12 +44,13 @@ export const studentValidatorSchema = z.object({
   email: z.string(),
   bloodGroup: bloodGroupSchema.optional(),
   presentAddress: z.string(),
-  parmanentAddress: z.string(),
+  permanentAddress: z.string(), // Corrected typo
   guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
+  localGuardian: localGuardianSchema.optional(),
   profileImage: z.string().optional(),
   isActive: z.enum(["active", "inactive"]),
 });
+
 export const createStudentZodSchema = z.object({
   body: studentValidatorSchema,
 });
@@ -51,13 +58,15 @@ export const validateRequest =
   (schema: AnyZodObject | ZodEffects<AnyZodObject>) =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      await schema.parseAsync({
-        body: req.body,
-      });
+      await schema.parseAsync(req);
       next();
     } catch (error: any) {
+      // console.log(error);
       if (error instanceof ZodError) {
-        next(error);
+        res.status(400).json({
+          error: "Invalid Data",
+          details: error.errors.map((err) => err.message),
+        });
       } else {
         next(error);
       }

@@ -1,10 +1,13 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
+import bodyParser from "body-parser";
+
 import { studentRouter } from "./app/modules/student/student.route";
 import { ZodError } from "zod";
 const app: Application = express();
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
 app.use("/api/v1", studentRouter);
 app.get("/", (req: Request, res: Response) => {
   res.send("laqll;");
