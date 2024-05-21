@@ -61,8 +61,9 @@ export const validateRequest =
       await schema.parseAsync(req);
       next();
     } catch (error: any) {
-      // console.log(error);
+      console.log(error);
       if (error instanceof ZodError) {
+        console.log("error", error);
         res.status(400).json({
           error: "Invalid Data",
           details: error.errors.map((err) => err.message),
